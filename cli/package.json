@@ -1,6 +1,6 @@
 {
   "name": "pnpm-sync-dependencies-meta-injected",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "license": "MIT",
   "bin": {
@@ -21,10 +21,11 @@
     "test": "pnpm --filter 'tests' test"
   },
   "dependencies": {
-    "@manypkg/find-root": "^2.1.0",
-    "@manypkg/get-packages": "^2.1.0",
+    "@pnpm/find-workspace-dir": "^6.0.1",
+    "@pnpm/find-workspace-packages": "^6.0.9",
     "@pnpm/fs.hard-link-dir": "^2.0.1",
     "@pnpm/logger": "^5.0.0",
+    "@pnpm/read-project-manifest": "^5.0.1",
     "debug": "^4.3.4",
     "fs-extra": "^11.1.1",
     "proper-lockfile": "^4.1.2",

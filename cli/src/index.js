@@ -1,10 +1,11 @@
-import { findRoot } from '@manypkg/find-root';
-import { getPackages } from '@manypkg/get-packages';
+import { findWorkspaceDir } from '@pnpm/find-workspace-dir';
+import { findWorkspacePackages } from '@pnpm/find-workspace-packages';
 import { hardLinkDir } from '@pnpm/fs.hard-link-dir';
+import { readExactProjectManifest } from '@pnpm/read-project-manifest';
 import Debug from 'debug';
-import { pathExists, readJson, remove } from 'fs-extra/esm';
+import { pathExists, remove } from 'fs-extra/esm';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import path, { dirname, join } from 'node:path';
 import lockfile from 'proper-lockfile';
 import resolvePackageManifestPath from 'resolve-package-path';
 
@@ -14,29 +15,42 @@ const debug = Debug('sync-pnpm');
 const syncDir = './dist';
 
 export default async function syncPnpm(dir = process.cwd()) {
-  const root = await findRoot(dir);
-  const ownPackageJson = await readJson(join(dir, 'package.json'));
+  const root = await findWorkspaceDir(dir);
+
+  const localManifestPath = path.join(dir, 'package.json');
+  const ownProject = await readExactProjectManifest(localManifestPath);
+  const ownPackageJson = ownProject.manifest;
   const ownDependencies = [
     ...Object.keys(ownPackageJson.dependencies ?? {}),
     ...Object.keys(ownPackageJson.devDependencies ?? {}),
   ];
 
-  const localPackages = (await getPackages(root.rootDir)).packages;
+  const localProjects = await findWorkspacePackages(root);
+  const packagesToSync = localProjects.filter((p) => {
+    if (!p.manifest.name) return false;
 
-  const packagesToSync = localPackages.filter(
-    (p) =>
-      p.packageJson.name !== 'sync-pnpm' &&
-      ownDependencies.includes(p.packageJson.name)
-  );
+    return ownDependencies.includes(p.manifest.name);
+  });
 
   for (const pkg of packagesToSync) {
-    let name = pkg.packageJson.name;
+    let name = pkg.manifest.name;
 
     /**
      * This likely won't happen, but we can't have declared
      * a dependency on a package without a name.
      */
     if (!name) continue;
+
+    const { files } = pkg.manifest;
+
+    /**
+     * It's unlikely that a modern package will forgo these things, unless they're a
+     * single file in the root directory of the package
+     */
+    if (!files && !pkg.manifest.exports) {
+      // TODO: sync the whole package
+      continue;
+    }
 
     const syncFrom = join(pkg.dir, syncDir);
     const resolvedPackagePath = resolvePackagePath(name, dir);
