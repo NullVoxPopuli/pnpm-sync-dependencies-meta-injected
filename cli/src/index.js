@@ -14,6 +14,8 @@ const debug = Debug('sync-pnpm');
 const syncDir = './dist';
 
 export default async function syncPnpm(dir = process.cwd()) {
+  console.log(dir);
+
   const root = await findRoot(dir);
   const ownPackageJson = await readJson(join(dir, 'package.json'));
   const ownDependencies = [

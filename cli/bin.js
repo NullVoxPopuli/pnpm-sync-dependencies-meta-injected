@@ -14,8 +14,8 @@ yarg
     ['run', '$0'],
     'the default command -- sync dependencies if relevant',
     () => {},
-    (args) => {
-      return run(args);
+    () => {
+      return run();
     }
   )
   .help().argv;
