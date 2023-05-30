@@ -1,0 +1,56 @@
+{
+  "name": "pnpm-sync-dependencies-meta-injected",
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "sync-dependencies-meta-injected": "./bin.js"
+  },
+  "files": [
+    "src/**/*",
+    "bin.js"
+  ],
+  "scripts": {
+    "build:types": "tsc --build",
+    "lint": "concurrently 'npm:lint:*(!fix)' --names 'lint:'",
+    "lint:fix": "concurrently 'npm:lint:*:fix' --names 'fix:'",
+    "lint:js": "eslint . --cache",
+    "lint:js:fix": "eslint . --fix",
+    "lint:prettier": "prettier --check .",
+    "lint:prettier:fix": "prettier --write .",
+    "test": "pnpm --filter 'tests' test"
+  },
+  "dependencies": {
+    "@manypkg/find-root": "^2.1.0",
+    "@manypkg/get-packages": "^2.1.0",
+    "@pnpm/fs.hard-link-dir": "^2.0.1",
+    "debug": "^4.3.4",
+    "fs-extra": "^11.1.1",
+    "proper-lockfile": "^4.1.2",
+    "resolve-package-path": "^4.0.3",
+    "yargs": "^17.6.2"
+  },
+  "devDependencies": {
+    "@nullvoxpopuli/eslint-configs": "^3.0.4",
+    "@types/debug": "^4.1.8",
+    "@types/fs-extra": "^11.0.1",
+    "@types/node": "^20.2.5",
+    "@types/proper-lockfile": "^4.1.2",
+    "@typescript-eslint/eslint-plugin": "^5.48.2",
+    "@typescript-eslint/parser": "^5.48.2",
+    "concurrently": "^7.2.1",
+    "eslint": "^8.32.0",
+    "eslint-plugin-decorator-position": "^5.0.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.3",
+    "typescript": "4.9.4"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "volta": {
+    "node": "16.14.0"
+  }
+}
