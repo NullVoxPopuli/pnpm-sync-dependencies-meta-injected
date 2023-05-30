@@ -15,22 +15,9 @@ const debug = Debug('sync-pnpm');
 const syncDir = './dist';
 
 export default async function syncPnpm(dir = process.cwd()) {
-  const root = await findWorkspaceDir(dir);
+  const packagesToSync = await getPackagesToSync(dir);
 
-  const localManifestPath = path.join(dir, 'package.json');
-  const ownProject = await readExactProjectManifest(localManifestPath);
-  const ownPackageJson = ownProject.manifest;
-  const ownDependencies = [
-    ...Object.keys(ownPackageJson.dependencies ?? {}),
-    ...Object.keys(ownPackageJson.devDependencies ?? {}),
-  ];
-
-  const localProjects = await findWorkspacePackages(root);
-  const packagesToSync = localProjects.filter((p) => {
-    if (!p.manifest.name) return false;
-
-    return ownDependencies.includes(p.manifest.name);
-  });
+  if (!packagesToSync) return;
 
   for (const pkg of packagesToSync) {
     let name = pkg.manifest.name;
@@ -59,6 +46,59 @@ export default async function syncPnpm(dir = process.cwd()) {
 
     await syncPkg(syncFrom, syncTo);
   }
+}
+
+/**
+ * @param {string} dir the current working directory or the directory of a project
+ */
+async function getPackagesToSync(dir) {
+  const root = await findWorkspaceDir(dir);
+
+  if (!root) {
+    throw new Error(`Could not find workspace root`);
+  }
+
+  const localManifestPath = path.join(dir, 'package.json');
+  const ownProject = await readExactProjectManifest(localManifestPath);
+  const injectedDependencyNames = injectedDeps(ownProject);
+
+  /**
+   * If dependencies are not injected, we don't need to re-link
+   */
+  if (!injectedDependencyNames || injectedDependencyNames?.size === 0) {
+    return;
+  }
+
+  const localProjects = await findWorkspacePackages(root);
+
+  return localProjects.filter((p) => {
+    if (!p.manifest.name) return false;
+
+    return injectedDependencyNames.has(p.manifest.name);
+  });
+}
+
+/**
+ * @typedef {Awaited<ReturnType<typeof readExactProjectManifest>>} Project
+ *
+ * @param {Project} project
+ */
+function injectedDeps(project) {
+  const ownPackageJson = project.manifest;
+
+  let depMeta = ownPackageJson.dependenciesMeta;
+
+  if (!depMeta) return;
+
+  let injectedDependencyNames = new Set();
+
+  for (let [depName, meta] of Object.entries(depMeta)) {
+    if (meta.injected) {
+      injectedDependencyNames.add(depName);
+    }
+  }
+
+  return injectedDependencyNames;
 }
 
 /**
