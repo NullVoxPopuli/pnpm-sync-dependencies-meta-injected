@@ -26,6 +26,9 @@ importers:
       '@pnpm/fs.hard-link-dir':
         specifier: ^2.0.1
         version: 2.0.1(@pnpm/logger@5.0.0)
+      '@pnpm/logger':
+        specifier: ^5.0.0
+        version: 5.0.0
       debug:
         specifier: ^4.3.4
         version: 4.3.4
@@ -5079,7 +5082,7 @@ packages:
     resolution: {integrity: sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==}
     hasBin: true
     dependencies:
-      minimist: 1.2.7
+      minimist: 1.2.8
     dev: true
 
   /json5@2.2.3:
@@ -5640,7 +5643,7 @@ packages:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
     hasBin: true
     dependencies:
-      minimist: 1.2.7
+      minimist: 1.2.8
     dev: true
 
   /mkdirp@1.0.4:
