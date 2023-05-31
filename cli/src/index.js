@@ -14,7 +14,16 @@ const debug = Debug('sync-pnpm');
 
 const syncDir = './dist';
 
-export default async function syncPnpm(dir = process.cwd()) {
+/**
+ * @typedef {object} Options
+ * @property {string} directory working directory
+ * @property {boolean} watch enable or disable watch mode
+ *
+ * @param {Options} options
+ */
+export default async function syncPnpm(options) {
+  const { directory: dir, watch } = options;
+
   const packagesToSync = await getPackagesToSync(dir);
 
   if (!packagesToSync) return;
