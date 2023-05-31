@@ -4,6 +4,7 @@ import { hardLinkDir } from '@pnpm/fs.hard-link-dir';
 import { readExactProjectManifest } from '@pnpm/read-project-manifest';
 import Debug from 'debug';
 import { pathExists, remove } from 'fs-extra/esm';
+import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path, { dirname, join } from 'node:path';
 import lockfile from 'proper-lockfile';
@@ -11,8 +12,6 @@ import resolvePackageManifestPath from 'resolve-package-path';
 
 const require = createRequire(import.meta.url);
 const debug = Debug('sync-pnpm');
-
-const syncDir = './dist';
 
 /**
  * @typedef {object} Options
@@ -48,12 +47,41 @@ export default async function syncPnpm(options) {
       continue;
     }
 
-    const syncFrom = join(pkg.dir, syncDir);
-    const resolvedPackagePath = resolvePackagePath(name, dir);
+    if (!files) {
+      throw new Error(
+        `${name} did not specify a 'files' entry in package.json. This is required for telling npm pack what files to include. Docs: https://docs.npmjs.com/cli/v9/configuring-npm/package-json#files`
+      );
+    }
 
-    const syncTo = join(resolvedPackagePath, syncDir);
+    for (let syncDir of files) {
+      const syncFrom = join(pkg.dir, syncDir);
+      const resolvedPackagePath = resolvePackagePath(name, dir);
+      const syncTo = join(resolvedPackagePath, syncDir);
 
-    await syncPkg(syncFrom, syncTo);
+      if (await isFile(syncFrom)) {
+        // we only sync directories
+        // TODO: how do we sync files?
+        continue;
+      }
+
+      await syncPkg(syncFrom, syncTo);
+    }
+  }
+}
+
+/**
+ * @param {string} filePath
+ */
+async function isFile(filePath) {
+  try {
+    let stat = await fs.lstat(filePath);
+
+    return stat.isFile();
+  } catch {
+    // We don't care about *any* errors here
+    // It's likely that the path doesn't exist
+    // or we don't have permission to read it (in which case false is correct anyway)
+    return false;
   }
 }
 
@@ -134,27 +162,38 @@ function resolvePackagePath(name, startingDirectory) {
  * @param {string} syncTo
  */
 async function syncPkg(syncFrom, syncTo) {
-  if (await pathExists(syncFrom)) {
-    let releaseLock;
+  let exists = await pathExists(syncFrom);
 
-    try {
-      releaseLock = await lockfile.lock(syncTo, { realpath: false });
-      debug(`lockfile created for syncing to ${syncTo}`);
-    } catch (e) {
-      debug(
-        `lockfile already exists for syncing to ${syncTo}, some other sync process is already handling this directory, so skipping...`
-      );
-
-      return;
-    }
-
-    if (await pathExists(syncTo)) {
-      await remove(syncTo);
-      debug(`removed ${syncTo} before syncing`);
-    }
-
-    debug(`syncing from ${syncFrom} to ${syncTo}`);
-    await hardLinkDir(syncFrom, [syncTo]);
-    releaseLock();
+  if (!exists) {
+    /**
+     * If the path doesn't exist, it's likely that the package hasn't
+     * been built yet.
+     * Once built, the path should exist.
+     *
+     * Another scenario is that the `files` or `exports` entries are incorrect.
+     */
+    return;
   }
+
+  let releaseLock;
+
+  try {
+    releaseLock = await lockfile.lock(syncTo, { realpath: false });
+    debug(`lockfile created for syncing to ${syncTo}`);
+  } catch (e) {
+    debug(
+      `lockfile already exists for syncing to ${syncTo}, some other sync process is already handling this directory, so skipping...`
+    );
+
+    return;
+  }
+
+  if (await pathExists(syncTo)) {
+    await remove(syncTo);
+    debug(`removed ${syncTo} before syncing`);
+  }
+
+  debug(`syncing from ${syncFrom} to ${syncTo}`);
+  await hardLinkDir(syncFrom, [syncTo]);
+  releaseLock();
 }
