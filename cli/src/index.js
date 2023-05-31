@@ -9,9 +9,11 @@ import { createRequire } from 'node:module';
 import path, { dirname, join } from 'node:path';
 import lockfile from 'proper-lockfile';
 import resolvePackageManifestPath from 'resolve-package-path';
+import Watcher from 'watcher';
 
 const require = createRequire(import.meta.url);
 const debug = Debug('sync-pnpm');
+const DEBOUNCE_INTERVAL = 50;
 
 /**
  * @typedef {object} Options
@@ -26,6 +28,9 @@ export default async function syncPnpm(options) {
   const packagesToSync = await getPackagesToSync(dir);
 
   if (!packagesToSync) return;
+
+  /** @type { { [syncFrom: string]: string } } */
+  let pathsToSync = {};
 
   for (const pkg of packagesToSync) {
     let name = pkg.manifest.name;
@@ -58,15 +63,62 @@ export default async function syncPnpm(options) {
       const resolvedPackagePath = resolvePackagePath(name, dir);
       const syncTo = join(resolvedPackagePath, syncDir);
 
-      if (await isFile(syncFrom)) {
-        // we only sync directories
-        // TODO: how do we sync files?
-        continue;
-      }
-
-      await syncPkg(syncFrom, syncTo);
+      pathsToSync[syncFrom] = syncTo;
     }
   }
+
+  await sync(pathsToSync, watch);
+}
+
+/**
+ * @param {{ [fromPath: string]: string }} paths
+ * @param {boolean} isWatchMode
+ */
+async function sync(paths, isWatchMode) {
+  if (!isWatchMode) {
+    for (let [syncFrom, syncTo] of Object.entries(paths)) {
+      await syncFolder(syncFrom, syncTo);
+    }
+
+    return;
+  }
+
+  let fromPaths = Object.keys(paths);
+  let watcher = new Watcher(fromPaths);
+
+  /** @type {string[]} */
+  let dirtyPaths = [];
+
+  watcher.on('all', (_event, targetPath /*, targetPathNext*/) => {
+    dirtyPaths.push(targetPath);
+  });
+
+  async function handleDirtyPaths() {
+    if (dirtyPaths.length) {
+      /** @type {{ [fromPath: string]: boolean}} */
+      let foundFromPaths = {};
+
+      for (let dirtyPath of dirtyPaths) {
+        let path = fromPaths.find((p) => dirtyPath.startsWith(p));
+
+        if (path === undefined) {
+          debug(`path not under watched root ${dirtyPath}`);
+        } else {
+          foundFromPaths[path] = true;
+        }
+      }
+
+      dirtyPaths = [];
+
+      for (let foundFromPath of Object.keys(foundFromPaths)) {
+        await syncFolder(foundFromPath, paths[foundFromPath]);
+      }
+    }
+
+    setTimeout(handleDirtyPaths, DEBOUNCE_INTERVAL);
+  }
+
+  handleDirtyPaths();
 }
 
 /**
@@ -161,7 +213,7 @@ function resolvePackagePath(name, startingDirectory) {
  * @param {string} syncFrom
  * @param {string} syncTo
  */
-async function syncPkg(syncFrom, syncTo) {
+async function syncFolder(syncFrom, syncTo) {
   let exists = await pathExists(syncFrom);
 
   if (!exists) {
@@ -172,6 +224,12 @@ async function syncPkg(syncFrom, syncTo) {
      *
      * Another scenario is that the `files` or `exports` entries are incorrect.
      */
+    return;
+  }
+
+  if (await isFile(syncFrom)) {
+    // we only sync directories
+    // TODO: how do we sync files?
     return;
   }
 

@@ -30,6 +30,7 @@
     "fs-extra": "^11.1.1",
     "proper-lockfile": "^4.1.2",
     "resolve-package-path": "^4.0.3",
+    "watcher": "^2.2.2",
     "yargs": "^17.6.2"
   },
   "devDependencies": {
