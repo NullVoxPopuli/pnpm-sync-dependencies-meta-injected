@@ -20,7 +20,8 @@
     "lint:js:fix": "eslint . --fix",
     "lint:prettier": "prettier --check .",
     "lint:prettier:fix": "prettier --write .",
-    "test": "pnpm --filter 'tests' test"
+    "test": "pnpm --filter 'tests' test",
+    "prepack": "cp ../README.md ./"
   },
   "dependencies": {
     "@pnpm/find-workspace-dir": "^6.0.2",
