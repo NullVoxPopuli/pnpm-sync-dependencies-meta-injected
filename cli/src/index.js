@@ -1,11 +1,12 @@
+import fs from 'node:fs/promises';
+import path, { dirname, join } from 'node:path';
+
 import { findWorkspaceDir } from '@pnpm/find-workspace-dir';
 import { findWorkspacePackages } from '@pnpm/find-workspace-packages';
 import { hardLinkDir } from '@pnpm/fs.hard-link-dir';
 import { readExactProjectManifest } from '@pnpm/read-project-manifest';
 import Debug from 'debug';
-import { pathExists, remove } from 'fs-extra/esm';
-import fs from 'node:fs/promises';
-import path, { dirname, join } from 'node:path';
+import { pathExists, remove } from 'fs-extra';
 import lockfile from 'proper-lockfile';
 import resolvePackageManifestPath from 'resolve-package-path';
 import Watcher from 'watcher';
@@ -45,7 +46,7 @@ export default async function syncPnpm(options) {
      * It's unlikely that a modern package will forgo these things, unless they're a
      * single file in the root directory of the package
      */
-    if (!files && !pkg.manifest.exports) {
+    if (!files && !('exports' in pkg.manifest)) {
       // TODO: sync the whole package
       continue;
     }
