@@ -1,12 +1,8 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@2.2.0/schema.json",
-  "notes": {
-    "overall config docs": "https://github.com/changesets/changesets/blob/main/docs/config-file-options.md",
-    "changelog customization": "https://github.com/changesets/changesets/blob/main/docs/modifying-changelog-format.md"
-  },
   "changelog": [
     "@changesets/changelog-github",
-    { "repo": "NullVoxPopuli/ember-addon-migrator" }
+    { "repo": "NullVoxPopuli/pnpm-sync-dependencies-meta-injected" }
   ],
   "commit": false,
   "fixed": [],
@@ -14,5 +10,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["tests"]
+  "ignore": []
 }
