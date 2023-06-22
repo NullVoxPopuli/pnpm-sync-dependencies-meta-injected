@@ -1,10 +1,10 @@
 # `pnpm-sync-dependencies-meta-injected`
 
 
-- Do you use `dependenciesMeta.*.injected = true`? 
+- Do you use [`dependenciesMeta.*.injected = true`](https://pnpm.io/package_json#dependenciesmetainjected)? 
 - Are you tired of the fight against the balance between ergonomics and "dependencies being correct"?
 
-_This package (with turborepo) will solve all your problems!_This
+_This package (with turborepo) will solve all your problems!_
 
 ## Setup 
 
