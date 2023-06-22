@@ -217,6 +217,10 @@ async function syncFolder(syncFrom, syncTo) {
   let exists = await pathExists(syncFrom);
 
   if (!exists) {
+    debug(
+      `Tryied to sync ${syncFrom}, but it did not exist. Did you forget to build the library?`
+    );
+
     /**
      * If the path doesn't exist, it's likely that the package hasn't
      * been built yet.
