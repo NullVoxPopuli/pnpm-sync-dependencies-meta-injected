@@ -5,13 +5,11 @@ import { readExactProjectManifest } from '@pnpm/read-project-manifest';
 import Debug from 'debug';
 import { pathExists, remove } from 'fs-extra/esm';
 import fs from 'node:fs/promises';
-import { createRequire } from 'node:module';
 import path, { dirname, join } from 'node:path';
 import lockfile from 'proper-lockfile';
 import resolvePackageManifestPath from 'resolve-package-path';
 import Watcher from 'watcher';
 
-const require = createRequire(import.meta.url);
 const debug = Debug('sync-pnpm');
 const DEBOUNCE_INTERVAL = 50;
 
