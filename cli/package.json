@@ -1,8 +1,9 @@
 {
   "name": "pnpm-sync-dependencies-meta-injected",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "type": "module",
   "license": "MIT",
+  "repository": "https://github.com/NullVoxPopuli/pnpm-sync-dependencies-meta-injected",
   "bin": {
     "sync-dependencies-meta-injected": "./bin.js"
   },
