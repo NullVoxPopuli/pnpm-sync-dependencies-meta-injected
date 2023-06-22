@@ -19,7 +19,7 @@ jobs:
       pending: ${{ steps.set-pending.outputs.pend }}
     steps:
       - uses: wyvox/action@v1
-      - run: pnpm build
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
