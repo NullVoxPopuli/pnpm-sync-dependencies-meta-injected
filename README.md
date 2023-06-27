@@ -11,7 +11,7 @@ _This package (with turborepo) will solve all your problems!_
 1. Install the dependency.
 
     ```bash
-    pnpm i sync-dependencies-meta-injected -D
+    pnpm i pnpm-sync-dependencies-meta-injected -D
     ```
 2. In your `turbo.json`, configure a `_syncPnpm` task:
     ```js
