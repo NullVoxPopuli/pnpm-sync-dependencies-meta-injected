@@ -32,16 +32,18 @@ _This package (with turborepo) will solve all your problems!_
     By using [`concurrently`](https://github.com/open-cli-tools/concurrently), we can run our dev server as well as the `_syncPnpm` task in watch mode in parallel.
 
 5. In your `turbo.json`, configure each task that relies on `^build` to also rely on `_syncPnpm` (no `^`) -- this, combined with the above will sync the hard links that `pnpm` uses for `dependenciesMeta.*.injected` after the dependencies are built.
-    ```js
-    "test": {
-      "outputs": [],
-      "dependsOn": ["_syncPnpm", "^build"]
-    },
+    ```diff
+      "test": {
+        "outputs": [],
+    -   "dependsOn": ["^build"]
+    +   "dependsOn": ["_syncPnpm"]
+      },
 
-    "build": {
-      "outputs": ["dist/**"],
-      "dependsOn": ["_syncPnpm", "^build"]
-    },
+      "build": {
+        "outputs": ["dist/**"],
+    -   "dependsOn": ["^build"]
+    +   "dependsOn": ["_syncPnpm"]
+      },
     // etc
     ```
 
