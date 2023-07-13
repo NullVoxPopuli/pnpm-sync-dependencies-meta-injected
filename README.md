@@ -27,6 +27,8 @@ _This package will solve all your problems!_
 
 
 ## If you use turborepo
+
+When using turborepo, we can automatically sync the injected dependencies for all tasks defined in turbo.json
     
 1. In your `turbo.json`, configure a `_syncPnpm` task:
     ```js
