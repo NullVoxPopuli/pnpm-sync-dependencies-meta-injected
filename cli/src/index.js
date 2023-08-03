@@ -24,7 +24,16 @@ const DEBOUNCE_INTERVAL = 50;
 export default async function syncPnpm(options) {
   const { directory: dir, watch } = options;
 
+  debug(`Detected arguments:`);
+  debug(`--watch=${watch}`);
+
   const packagesToSync = await getPackagesToSync(dir);
+
+  debug(
+    `Found ${
+      packagesToSync?.length ?? 0
+    } packages to sync. Did you forget dependenciesMeta.*.injected?`
+  );
 
   if (!packagesToSync) return;
 
@@ -48,6 +57,7 @@ export default async function syncPnpm(options) {
      */
     if (!files && !('exports' in pkg.manifest)) {
       // TODO: sync the whole package
+      debug('Packages did not have a files or exports entry in package.json');
       continue;
     }
 
@@ -81,6 +91,8 @@ async function sync(paths, isWatchMode) {
 
     return;
   }
+
+  debug('watch mode enabled');
 
   let fromPaths = Object.keys(paths);
   let watcher = new Watcher(fromPaths);
@@ -217,7 +229,7 @@ async function syncFolder(syncFrom, syncTo) {
 
   if (!exists) {
     debug(
-      `Tryied to sync ${syncFrom}, but it did not exist. Did you forget to build the library?`
+      `Tried to sync ${syncFrom}, but it did not exist. Did you forget to build the library?`
     );
 
     /**
