@@ -29,13 +29,17 @@ export default async function syncPnpm(options) {
 
   const packagesToSync = await getPackagesToSync(dir);
 
-  debug(
-    `Found ${
-      packagesToSync?.length ?? 0
-    } packages to sync. Did you forget dependenciesMeta.*.injected?`
-  );
+  if (!packagesToSync) {
+    debug(
+      `Found 0 packages to sync. Did you forget dependenciesMeta.*.injected?`
+    );
 
-  if (!packagesToSync) return;
+    return;
+  }
+
+  debug(
+    `Found ${packagesToSync.length} packages to sync.`
+  );
 
   /** @type { { [syncFrom: string]: string } } */
   let pathsToSync = {};
