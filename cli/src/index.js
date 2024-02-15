@@ -37,9 +37,7 @@ export default async function syncPnpm(options) {
     return;
   }
 
-  debug(
-    `Found ${packagesToSync.length} packages to sync.`
-  );
+  debug(`Found ${packagesToSync.length} packages to sync.`);
 
   /** @type { { [syncFrom: string]: string } } */
   let pathsToSync = {};
