@@ -26,6 +26,7 @@ export default async function syncPnpm(options) {
 
   debug(`Detected arguments:`);
   debug(`--watch=${watch}`);
+  debug(`--directory=${dir}`);
 
   const packagesToSync = await getPackagesToSync(dir);
 
@@ -73,6 +74,20 @@ export default async function syncPnpm(options) {
       const syncFrom = join(pkg.dir, syncDir);
       const resolvedPackagePath = resolvePackagePath(name, dir);
       const syncTo = join(resolvedPackagePath, syncDir);
+
+      debug(
+        `Found 'files' entry (${syncDir}) in package.json#files:\n` +
+          `  Source: ${syncFrom}\n` +
+          `  Destination: ${syncTo}\n` +
+          `    Because ${name} resolved to\n` +
+          `      ${resolvedPackagePath}\n`
+      );
+
+      if (syncFrom === syncTo) {
+        throw new Error(
+          `destination (${syncTo} }is the same as source (${syncFrom}), this library (${name}) is not an injected dependency. Did you accidentally use package.json#overrides on an in-monorepo package?`
+        );
+      }
 
       pathsToSync[syncFrom] = syncTo;
     }
