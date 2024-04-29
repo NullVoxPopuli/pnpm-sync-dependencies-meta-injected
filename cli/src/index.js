@@ -84,7 +84,7 @@ export default async function syncPnpm(options) {
       );
 
       if (syncFrom === syncTo) {
-        throw new Error(
+        debug(
           `destination (${syncTo} }is the same as source (${syncFrom}), this library (${name}) is not an injected dependency. Did you accidentally use package.json#overrides on an in-monorepo package?`
         );
       }
