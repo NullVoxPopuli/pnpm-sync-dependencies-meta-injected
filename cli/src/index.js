@@ -6,7 +6,7 @@ import { findWorkspacePackages } from '@pnpm/find-workspace-packages';
 import { hardLinkDir } from '@pnpm/fs.hard-link-dir';
 import { readExactProjectManifest } from '@pnpm/read-project-manifest';
 import Debug from 'debug';
-import { pathExists } from 'fs-extra';
+import { pathExists, remove } from 'fs-extra';
 import lockfile from 'proper-lockfile';
 import resolvePackageManifestPath from 'resolve-package-path';
 import Watcher from 'watcher';
@@ -278,13 +278,21 @@ async function syncFolder(syncFrom, syncTo) {
     return;
   }
 
-  // In case anyone tries to add this back,
-  // we can't remove because it ends up removing the source files
-  // due to how linking now works in pnpm
-  //if (await pathExists(syncTo)) {
-  //  await remove(syncTo);
-  //  debug(`removed ${syncTo} before syncing`);
-  //}
+  // NOTE: that there is an oddity with this code:
+  //   in some situations,
+  //   we can't remove because it ends up removing the source files
+  //   (like if the syncTo === syncFrom -- which happens if
+  //    depMeta.*.inject has failed, and we resolve the original output
+  if (await pathExists(syncTo)) {
+    if (syncTo === syncFrom) {
+      throw new Error(
+        `dependency is not injected! would remove originally compiled files. at ${syncFrom}`
+      );
+    }
+
+    await remove(syncTo);
+    debug(`removed ${syncTo} before syncing`);
+  }
 
   debug(`syncing from ${syncFrom} to ${syncTo}`);
   await hardLinkDir(syncFrom, [syncTo]);
