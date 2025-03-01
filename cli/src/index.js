@@ -12,9 +12,10 @@ import resolvePackageManifestPath from 'resolve-package-path';
 import Watcher from 'watcher';
 
 const debug = Debug('sync-pnpm');
+
 const DEBOUNCE_INTERVAL = 50;
 
-/** 
+/**
  * @param {String} root
  */
 async function getNPMRC(root) {
@@ -106,6 +107,10 @@ export default async function syncPnpm(options) {
   }
   const npmrc = await getNPMRC(root);
   const packages = await findWorkspacePackages(root);
+
+  const packageNames = packages.map((p) => p.manifest.name).filter(Boolean);
+  debug(`Found ${packageNames.length} packages in workspace.\n\t- ${packageNames.join('\n\t- ')}`);
+  debug(`Found .npmrc file with ${Object.keys(npmrc).length} entries.\n\n${JSON.stringify(npmrc, null, 2)}`);
 
   const packagesToSync = await getPackagesToSync(dir, packages, npmrc);
 
@@ -253,8 +258,9 @@ async function getPackagesToSync(dir, localProjects, npmrc) {
   const isInGlobalInjectMode = npmrc['inject-workspace-packages'];
   const localManifestPath = path.join(dir, 'package.json');
   const ownProject = await readExactProjectManifest(localManifestPath);
-  
-  return isInGlobalInjectMode ? injectedDeps(ownProject, localProjects) : workspaceDeps(ownProject, localProjects);
+
+  debug(`Syncing ${isInGlobalInjectMode ? 'all workspace' : 'manually specified' } injected dependencies`);
+  return isInGlobalInjectMode ? workspaceDeps(ownProject, localProjects) : injectedDeps(ownProject, localProjects);
 }
 
 /**
