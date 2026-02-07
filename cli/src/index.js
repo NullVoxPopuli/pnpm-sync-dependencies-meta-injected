@@ -2,9 +2,9 @@ import fs from 'node:fs/promises';
 import path, { dirname, join } from 'node:path';
 
 import { findWorkspaceDir } from '@pnpm/find-workspace-dir';
-import { findWorkspacePackages } from '@pnpm/find-workspace-packages';
 import { hardLinkDir } from '@pnpm/fs.hard-link-dir';
 import { readExactProjectManifest } from '@pnpm/read-project-manifest';
+import { findWorkspacePackages } from '@pnpm/workspace.find-packages';
 import Debug from 'debug';
 import { pathExists, remove } from 'fs-extra';
 import lockfile from 'proper-lockfile';
@@ -32,7 +32,7 @@ export default async function syncPnpm(options) {
 
   if (!packagesToSync) {
     debug(
-      `Found 0 packages to sync. Did you forget dependenciesMeta.*.injected?`
+      `Found 0 packages to sync. Did you forget dependenciesMeta.*.injected?`,
     );
 
     return;
@@ -41,10 +41,10 @@ export default async function syncPnpm(options) {
   debug(`Found ${packagesToSync.length} packages to sync.`);
 
   /** @type { { [syncFrom: string]: string } } */
-  let pathsToSync = {};
+  const pathsToSync = {};
 
   for (const pkg of packagesToSync) {
-    let name = pkg.manifest.name;
+    const name = pkg.manifest.name;
 
     /**
      * This likely won't happen, but we can't have declared
@@ -66,12 +66,12 @@ export default async function syncPnpm(options) {
 
     if (!files) {
       throw new Error(
-        `${name} did not specify a 'files' entry in package.json. This is required for telling npm pack what files to include. Docs: https://docs.npmjs.com/cli/v9/configuring-npm/package-json#files`
+        `${name} did not specify a 'files' entry in package.json. This is required for telling npm pack what files to include. Docs: https://docs.npmjs.com/cli/v9/configuring-npm/package-json#files`,
       );
     }
 
-    for (let syncDir of files) {
-      const syncFrom = join(pkg.dir, syncDir);
+    for (const syncDir of files) {
+      const syncFrom = join(pkg.rootDirRealPath, syncDir);
       const resolvedPackagePath = resolvePackagePath(name, dir);
       const syncTo = join(resolvedPackagePath, syncDir);
 
@@ -80,12 +80,12 @@ export default async function syncPnpm(options) {
           `  Source: ${syncFrom}\n` +
           `  Destination: ${syncTo}\n` +
           `    Because ${name} resolved to\n` +
-          `      ${resolvedPackagePath}\n`
+          `      ${resolvedPackagePath}\n`,
       );
 
       if (syncFrom === syncTo) {
         debug(
-          `destination (${syncTo} }is the same as source (${syncFrom}), this library (${name}) is not an injected dependency. Did you accidentally use package.json#overrides on an in-monorepo package?`
+          `destination (${syncTo} }is the same as source (${syncFrom}), this library (${name}) is not an injected dependency. Did you accidentally use package.json#overrides on an in-monorepo package?`,
         );
       }
 
@@ -102,7 +102,7 @@ export default async function syncPnpm(options) {
  */
 async function sync(paths, isWatchMode) {
   if (!isWatchMode) {
-    for (let [syncFrom, syncTo] of Object.entries(paths)) {
+    for (const [syncFrom, syncTo] of Object.entries(paths)) {
       await syncFolder(syncFrom, syncTo);
     }
 
@@ -111,8 +111,8 @@ async function sync(paths, isWatchMode) {
 
   debug('watch mode enabled');
 
-  let fromPaths = Object.keys(paths);
-  let watcher = new Watcher(fromPaths);
+  const fromPaths = Object.keys(paths);
+  const watcher = new Watcher(fromPaths);
 
   /** @type {string[]} */
   let dirtyPaths = [];
@@ -124,10 +124,10 @@ async function sync(paths, isWatchMode) {
   async function handleDirtyPaths() {
     if (dirtyPaths.length) {
       /** @type {{ [fromPath: string]: boolean}} */
-      let foundFromPaths = {};
+      const foundFromPaths = {};
 
-      for (let dirtyPath of dirtyPaths) {
-        let path = fromPaths.find((p) => dirtyPath.startsWith(p));
+      for (const dirtyPath of dirtyPaths) {
+        const path = fromPaths.find((p) => dirtyPath.startsWith(p));
 
         if (path === undefined) {
           debug(`path not under watched root ${dirtyPath}`);
@@ -138,7 +138,7 @@ async function sync(paths, isWatchMode) {
 
       dirtyPaths = [];
 
-      for (let foundFromPath of Object.keys(foundFromPaths)) {
+      for (const foundFromPath of Object.keys(foundFromPaths)) {
         await syncFolder(foundFromPath, paths[foundFromPath]);
       }
     }
@@ -154,7 +154,7 @@ async function sync(paths, isWatchMode) {
  */
 async function isFile(filePath) {
   try {
-    let stat = await fs.lstat(filePath);
+    const stat = await fs.lstat(filePath);
 
     return stat.isFile();
   } catch {
@@ -203,13 +203,13 @@ async function getPackagesToSync(dir) {
 function injectedDeps(project) {
   const ownPackageJson = project.manifest;
 
-  let depMeta = ownPackageJson.dependenciesMeta;
+  const depMeta = ownPackageJson.dependenciesMeta;
 
   if (!depMeta) return;
 
-  let injectedDependencyNames = new Set();
+  const injectedDependencyNames = new Set();
 
-  for (let [depName, meta] of Object.entries(depMeta)) {
+  for (const [depName, meta] of Object.entries(depMeta)) {
     if (meta.injected) {
       injectedDependencyNames.add(depName);
     }
@@ -225,7 +225,7 @@ function injectedDeps(project) {
 function resolvePackagePath(name, startingDirectory) {
   const resolvedManifestPath = resolvePackageManifestPath(
     name,
-    startingDirectory
+    startingDirectory,
   );
 
   if (!resolvedManifestPath) {
@@ -242,11 +242,11 @@ function resolvePackagePath(name, startingDirectory) {
  * @param {string} syncTo
  */
 async function syncFolder(syncFrom, syncTo) {
-  let exists = await pathExists(syncFrom);
+  const exists = await pathExists(syncFrom);
 
   if (!exists) {
     debug(
-      `Tried to sync ${syncFrom}, but it did not exist. Did you forget to build the library?`
+      `Tried to sync ${syncFrom}, but it did not exist. Did you forget to build the library?`,
     );
 
     /**
@@ -270,9 +270,9 @@ async function syncFolder(syncFrom, syncTo) {
   try {
     releaseLock = await lockfile.lock(syncTo, { realpath: false });
     debug(`lockfile created for syncing to ${syncTo}`);
-  } catch (e) {
+  } catch {
     debug(
-      `lockfile already exists for syncing to ${syncTo}, some other sync process is already handling this directory, so skipping...`
+      `lockfile already exists for syncing to ${syncTo}, some other sync process is already handling this directory, so skipping...`,
     );
 
     return;
@@ -286,7 +286,7 @@ async function syncFolder(syncFrom, syncTo) {
   if (await pathExists(syncTo)) {
     if (syncTo === syncFrom) {
       throw new Error(
-        `dependency is not injected! would remove originally compiled files. at ${syncFrom}`
+        `dependency is not injected! would remove originally compiled files. at ${syncFrom}`,
       );
     }
 
