@@ -3075,6 +3075,10 @@ packages:
     resolution: {integrity: sha512-vdTshSQ2JsRCgT8eKZWNJIL26C6bVqy1SOmuCMlKHegVeo8KYRobRrefOdUq9OozSPUUiSxrylteeRmLOMFfWg==}
     engines: {node: '>=12'}
 
+  safe-execa@0.1.4:
+    resolution: {integrity: sha512-GI3k4zl4aLC3lxZNEEXAxxcXE6E3TfOsJ5xxJPhcAv9MWwnH2O9I0HrDmZFsVnu/C8wzRYSsTHdoVRmL0VicDw==}
+    engines: {node: '>=12'}
+
   safe-push-apply@1.0.0:
     resolution: {integrity: sha512-iKE9w/Z7xCzUMIZqdBsp6pEQvwuEebH4vdpjcDWnyzaI6yl6O9FHvVpmGelvEHNsoY6wGblkxR6Zty/h00WiSA==}
     engines: {node: '>= 0.4'}
@@ -6468,7 +6472,7 @@ snapshots:
   graceful-git@4.0.0:
     dependencies:
       retry: 0.13.1
-      safe-execa: 0.1.2
+      safe-execa: 0.1.4
 
   has-bigints@1.1.0: {}
 
@@ -7342,6 +7346,12 @@ snapshots:
       isarray: 2.0.5
 
   safe-execa@0.1.2:
+    dependencies:
+      '@zkochan/which': 2.0.3
+      execa: 5.1.1
+      path-name: 1.0.0
+
+  safe-execa@0.1.4:
     dependencies:
       '@zkochan/which': 2.0.3
       execa: 5.1.1
