@@ -1,0 +1,7 @@
+# Unlabeled Changes
+
+* `pnpm-sync-dependencies-meta-injected`
+  * [#13](https://github.com/NullVoxPopuli/pnpm-sync-dependencies-meta-injected/pull/13) Upgrades ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+
+*Cannot plan release until the above changes are labeled*.
