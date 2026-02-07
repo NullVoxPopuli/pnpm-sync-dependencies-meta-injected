@@ -1,16 +1,21 @@
 {
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:NullVoxPopuli/pnpm-sync-dependencies-meta-injected.git"
+  },
   "license": "MIT",
   "author": "NullVoxPopuli",
   "scripts": {
     "dev": "pnpm --filter 'tests' dev",
-    "release": "changeset publish",
     "lint": "pnpm --filter '*' lint",
-    "lint:fix": "pnpm --filter '*' lint:fix"
+    "lint:fix": "pnpm --filter '*' lint:fix",
+    "release": "changeset publish"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.4.8",
-    "@changesets/cli": "^2.29.8"
+    "@changesets/cli": "^2.29.8",
+    "release-plan": "^0.17.4"
   },
   "packageManager": "pnpm@10.29.1",
   "engines": {
