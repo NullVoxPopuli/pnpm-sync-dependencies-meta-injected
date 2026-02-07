@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     // Path resolution
     "moduleResolution": "node",
     // We only use tsc for type checking

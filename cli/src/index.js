@@ -71,7 +71,7 @@ export default async function syncPnpm(options) {
     }
 
     for (const syncDir of files) {
-      const syncFrom = join(pkg.dir, syncDir);
+      const syncFrom = join(pkg.rootDirRealPath, syncDir);
       const resolvedPackagePath = resolvePackagePath(name, dir);
       const syncTo = join(resolvedPackagePath, syncDir);
 
