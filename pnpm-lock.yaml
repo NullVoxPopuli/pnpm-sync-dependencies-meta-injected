@@ -18,7 +18,7 @@ importers:
         version: 2.29.8(@types/node@20.19.32)
       release-plan:
         specifier: ^0.17.4
-        version: 0.17.4(supports-color@10.2.2)
+        version: 0.17.4
 
   cli:
     dependencies:
@@ -86,9 +86,6 @@ importers:
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
-      release-plan:
-        specifier: ^0.17.4
-        version: 0.17.4(supports-color@10.2.2)
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -5947,7 +5944,7 @@ snapshots:
 
   adm-zip@0.5.16: {}
 
-  agent-base@6.0.2(supports-color@10.2.2):
+  agent-base@6.0.2:
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
@@ -7020,14 +7017,14 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
-  github-changelog@2.1.4(supports-color@10.2.2):
+  github-changelog@2.1.4:
     dependencies:
       '@manypkg/get-packages': 2.2.2
       chalk: 4.1.2
       cli-highlight: 2.1.11
       execa: 5.1.1
       hosted-git-info: 4.1.0
-      make-fetch-happen: 9.1.0(supports-color@10.2.2)
+      make-fetch-happen: 9.1.0
       p-map: 3.0.0
       progress: 2.0.3
       yargs: 17.7.2
@@ -7138,10 +7135,10 @@ snapshots:
 
   http-cache-semantics@4.2.0: {}
 
-  http-proxy-agent@4.0.1(supports-color@10.2.2):
+  http-proxy-agent@4.0.1:
     dependencies:
       '@tootallnate/once': 1.1.2
-      agent-base: 6.0.2(supports-color@10.2.2)
+      agent-base: 6.0.2
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
@@ -7153,9 +7150,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  https-proxy-agent@5.0.1(supports-color@10.2.2):
+  https-proxy-agent@5.0.1:
     dependencies:
-      agent-base: 6.0.2(supports-color@10.2.2)
+      agent-base: 6.0.2
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
@@ -7510,13 +7507,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  make-fetch-happen@9.1.0(supports-color@10.2.2):
+  make-fetch-happen@9.1.0:
     dependencies:
       agentkeepalive: 4.6.0
       cacache: 15.3.0
       http-cache-semantics: 4.2.0
-      http-proxy-agent: 4.0.1(supports-color@10.2.2)
-      https-proxy-agent: 5.0.1(supports-color@10.2.2)
+      http-proxy-agent: 4.0.1
+      https-proxy-agent: 5.0.1
       is-lambda: 1.0.1
       lru-cache: 6.0.0
       minipass: 3.3.6
@@ -7526,7 +7523,7 @@ snapshots:
       minipass-pipeline: 1.2.4
       negotiator: 0.6.4
       promise-retry: 2.0.1
-      socks-proxy-agent: 6.2.1(supports-color@10.2.2)
+      socks-proxy-agent: 6.2.1
       ssri: 8.0.1
     transitivePeerDependencies:
       - bluebird
@@ -8083,7 +8080,7 @@ snapshots:
     dependencies:
       rc: 1.2.8
 
-  release-plan@0.17.4(supports-color@10.2.2):
+  release-plan@0.17.4:
     dependencies:
       '@manypkg/get-packages': 2.2.2
       '@npmcli/package-json': 6.2.0
@@ -8093,7 +8090,7 @@ snapshots:
       cli-highlight: 2.1.11
       execa: 9.6.1
       fs-extra: 11.3.3
-      github-changelog: 2.1.4(supports-color@10.2.2)
+      github-changelog: 2.1.4
       js-yaml: 4.1.1
       latest-version: 9.0.0
       parse-github-repo-url: 1.4.1
@@ -8282,9 +8279,9 @@ snapshots:
       dot-case: 3.0.4
       tslib: 2.8.1
 
-  socks-proxy-agent@6.2.1(supports-color@10.2.2):
+  socks-proxy-agent@6.2.1:
     dependencies:
-      agent-base: 6.0.2(supports-color@10.2.2)
+      agent-base: 6.0.2
       debug: 4.4.3(supports-color@10.2.2)
       socks: 2.8.7
     transitivePeerDependencies:
