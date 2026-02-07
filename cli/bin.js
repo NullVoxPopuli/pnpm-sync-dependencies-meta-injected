@@ -5,7 +5,7 @@ import { hideBin } from 'yargs/helpers';
 
 import run from './src/index.js';
 
-let yarg = yargs(hideBin(process.argv));
+const yarg = yargs(hideBin(process.argv));
 
 yarg.wrap(yarg.terminalWidth());
 
@@ -29,6 +29,6 @@ yarg
     },
     (args) => {
       return run(args);
-    }
+    },
   )
   .help().argv;

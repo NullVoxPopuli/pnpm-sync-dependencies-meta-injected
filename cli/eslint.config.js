@@ -2,7 +2,7 @@
 
 import { configs } from '@nullvoxpopuli/eslint-configs';
 
-const config = configs.node();
+const config = configs.node(import.meta.dirname);
 
 export default [
   ...config,
